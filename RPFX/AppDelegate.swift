@@ -69,7 +69,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-//        print("app launched")
+        print("app launched")
         // init discord stuff
         rpc = SwordRPC.init(appId: discordClientId)
         rpc!.delegate = self

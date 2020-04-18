@@ -10,6 +10,7 @@
 		5028EA45244B181D003A1830 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5028EA44244B181D003A1830 /* HelperFunctions.swift */; };
 		5068E2DF244AA3C90012CCF7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068E2DE244AA3C90012CCF7 /* Constants.swift */; };
 		5068E2E2244AD9170012CCF7 /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 5068E2E1244AD9170012CCF7 /* SwordRPC */; };
+		50C66C1B244B3A5800A4BECD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 50C66C1A244B3A5800A4BECD /* Main.storyboard */; };
 		50C6CBB3244974A400F10C5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C6CBB2244974A400F10C5D /* AppDelegate.swift */; };
 		50C6CBB7244974A700F10C5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50C6CBB6244974A700F10C5D /* Assets.xcassets */; };
 		50C6CBBA244974A700F10C5D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50C6CBB9244974A700F10C5D /* Preview Assets.xcassets */; };
@@ -20,6 +21,7 @@
 		5028EA44244B181D003A1830 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		5068E2DE244AA3C90012CCF7 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5068E2E3244ADAFE0012CCF7 /* SwordRPC */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwordRPC; path = "../SwordRPC-fork/SwordRPC"; sourceTree = "<group>"; };
+		50C66C1A244B3A5800A4BECD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		50C6CBAF244974A400F10C5D /* RPFX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RPFX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		50C6CBB2244974A400F10C5D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		50C6CBB6244974A700F10C5D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -66,6 +68,7 @@
 				5068E2DE244AA3C90012CCF7 /* Constants.swift */,
 				50C6CBC8244975F200F10C5D /* Applescript.swift */,
 				50C6CBB6244974A700F10C5D /* Assets.xcassets */,
+				50C66C1A244B3A5800A4BECD /* Main.storyboard */,
 				50C6CBBE244974A700F10C5D /* Info.plist */,
 				50C6CBBF244974A700F10C5D /* RPFX.entitlements */,
 				50C6CBB8244974A700F10C5D /* Preview Content */,
@@ -146,6 +149,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				50C66C1B244B3A5800A4BECD /* Main.storyboard in Resources */,
 				50C6CBBA244974A700F10C5D /* Preview Assets.xcassets in Resources */,
 				50C6CBB7244974A700F10C5D /* Assets.xcassets in Resources */,
 			);
