@@ -30,6 +30,9 @@ func runAPScript(_ s: APScripts) -> [String]? {
     // format the result as a Swift array
     if let desc = result {
         var arr: [String] = []
+        if desc.numberOfItems == 0 {
+            return arr
+        }
         for i in 1...desc.numberOfItems {
             let strVal = desc.atIndex(i)!.stringValue
             if var uwStrVal = strVal {
@@ -70,7 +73,7 @@ func getActiveFilename() -> String? {
 }
 
 func getActiveWorkspace() -> String? {
-    if let awd = runAPScript(.activeWorkspaceDocument) {
+    if let awd = runAPScript(.activeWorkspaceDocument), awd.count >= 2 {
         return awd[1]
     }
     return nil

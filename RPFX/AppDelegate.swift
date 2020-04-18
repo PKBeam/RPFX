@@ -75,13 +75,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         rpc!.connect()
     }
 
+    func deinitRPC() {
+        self.rpc!.setPresence(RichPresence())
+        self.rpc!.disconnect()
+        self.rpc = nil
+    }
+
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        print("app launched")
+//        print("app launched")
 
         for app in NSWorkspace.shared.runningApplications {
             // check if xcode is running
             if app.bundleIdentifier == xcodeBundleId {
-                print("xcode running, connecting...")
+//                print("xcode running, connecting...")
                 initRPC()
             }
         }
@@ -92,7 +98,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notifCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 if app.bundleIdentifier == xcodeBundleId {
-                    print("xcode launched, connecting...")
+//                    print("xcode launched, connecting...")
                     self.initRPC()
                 }
             }
@@ -102,9 +108,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notifCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 if app.bundleIdentifier == xcodeBundleId {
-                    print("xcode closed, disconnecting...")
-                    self.rpc!.disconnect()
-                    self.rpc = nil
+//                    print("xcode closed, disconnecting...")
+                    self.deinitRPC()
                 }
             }
         })
@@ -114,6 +119,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+        deinitRPC()
         clearTimer()
     }
 
