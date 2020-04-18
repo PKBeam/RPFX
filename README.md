@@ -3,9 +3,11 @@
 
 <img width="250" alt="rpfx" src="https://user-images.githubusercontent.com/18737124/79639955-388b7400-81d2-11ea-9631-95c9635a95dc.png">
 
-Using the magic of AppleScript, you can show all your friends what you're coding up right now!
+You can show all your friends what you're coding up right now!
 
-RPFX will show snazzy file icons for the following file types:
+RPFX will display the current file you're working on, as well as your workspace.
+
+In addition, it will also show file icons for the following file types:
 - `.swift`
 - `.playground`
 - `.storyboard`
