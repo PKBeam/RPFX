@@ -10,7 +10,7 @@ import Foundation
 
 
 // used to register for notifs when Xcode opens/closes
-let xcodeBundleId = "com.apple.dt.Xcode"
+let xcodeBundleId = "com.apple.mail"
 
 // how often we check Xcode for a status update
 let refreshInterval = 5 // seconds

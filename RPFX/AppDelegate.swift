@@ -68,17 +68,21 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 //        print("updating RP")
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-        print("app launched")
+    func initRPC() {
         // init discord stuff
         rpc = SwordRPC.init(appId: discordClientId)
         rpc!.delegate = self
+        rpc!.connect()
+    }
+
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        print("app launched")
 
         for app in NSWorkspace.shared.runningApplications {
             // check if xcode is running
             if app.bundleIdentifier == xcodeBundleId {
-//                print("xcode running, connecting...")
-                rpc!.connect()
+                print("xcode running, connecting...")
+                initRPC()
             }
         }
 
@@ -88,8 +92,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notifCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 if app.bundleIdentifier == xcodeBundleId {
-//                    print("xcode launched, connecting...")
-                    self.rpc!.connect()
+                    print("xcode launched, connecting...")
+                    self.initRPC()
                 }
             }
         })
@@ -98,8 +102,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         notifCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 if app.bundleIdentifier == xcodeBundleId {
-//                    print("xcode closed, disconnecting...")
+                    print("xcode closed, disconnecting...")
                     self.rpc!.disconnect()
+                    self.rpc = nil
                 }
             }
         })
