@@ -23,6 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func beginTimer() {
         timer = Timer(timeInterval: TimeInterval(refreshInterval), repeats: true, block: { _ in
             self.updateStatus()
+//            print(Date())
         })
         RunLoop.main.add(timer!, forMode: .common)
         timer!.fire()
@@ -119,6 +120,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+//        print("app closing")
         deinitRPC()
         clearTimer()
     }
