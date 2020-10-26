@@ -16,21 +16,17 @@ import SwordRPC
 class AppDelegate: NSObject, NSApplicationDelegate {
 
 //    var window: NSWindow!
-    var timer: Timer?
+    var statusUpdateTimer: Timer?
+    var discordConnectTimer: Timer?
     var rpc: SwordRPC?
     var startDate: Date?
 
     func beginTimer() {
-        timer = Timer(timeInterval: TimeInterval(refreshInterval), repeats: true, block: { _ in
+        statusUpdateTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(refreshInterval), repeats: true, block: { _ in
             self.updateStatus()
-//            print(Date())
+//            print("presence updating")
         })
-        RunLoop.main.add(timer!, forMode: .common)
-        timer!.fire()
-    }
-
-    func clearTimer() {
-        timer?.invalidate()
+        statusUpdateTimer!.fire()
     }
 
     func updateStatus() {
@@ -73,43 +69,63 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // init discord stuff
         rpc = SwordRPC.init(appId: discordClientId)
         rpc!.delegate = self
-        rpc!.connect()
+        // the API doesnt seem to like it if we try to connect too often?
+        discordConnectTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { timer in
+            if self.rpc!.connect() {
+//                print("connected")
+                timer.invalidate()
+            }
+        })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+            self.discordConnectTimer!.fire()
+        })
     }
 
     func deinitRPC() {
         self.rpc!.setPresence(RichPresence())
-        self.rpc!.disconnect()
+//        self.rpc!.disconnect()
+        discordConnectTimer?.invalidate()
         self.rpc = nil
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
 //        print("app launched")
+        let openApps = NSWorkspace.shared.runningApplications
+        var xcodeOpen = openApps.filter({$0.bundleIdentifier == xcodeBundleId}).count > 0
+        var discordOpen = openApps.filter({$0.bundleIdentifier == discordBundleId}).count > 0
 
-        for app in NSWorkspace.shared.runningApplications {
-            // check if xcode is running
-            if app.bundleIdentifier == xcodeBundleId {
-//                print("xcode running, connecting...")
-                initRPC()
-            }
+        if xcodeOpen && discordOpen {
+            initRPC()
         }
 
         let notifCenter = NSWorkspace.shared.notificationCenter
 
-        // run on Xcode launch
+        // run on Discord/Xcode launch
         notifCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
-                if app.bundleIdentifier == xcodeBundleId {
-//                    print("xcode launched, connecting...")
+                let appName = app.bundleIdentifier
+                if appName == xcodeBundleId {
+                    xcodeOpen = true
+                }
+                if appName == discordBundleId {
+                    discordOpen = true
+                }
+                if xcodeOpen && discordOpen {
                     self.initRPC()
                 }
             }
         })
 
-        // run on Xcode close
+        // run on Discord/Xcode close
         notifCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
-                if app.bundleIdentifier == xcodeBundleId {
-//                    print("xcode closed, disconnecting...")
+                let appName = app.bundleIdentifier
+                if appName == xcodeBundleId {
+                    xcodeOpen = false
+                    self.deinitRPC()
+                }
+                if appName == discordBundleId {
+                    discordOpen = false
                     self.deinitRPC()
                 }
             }
@@ -122,7 +138,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to tear down your application
 //        print("app closing")
         deinitRPC()
-        clearTimer()
+        statusUpdateTimer?.invalidate()
+        discordConnectTimer?.invalidate()
     }
 
 
@@ -130,14 +147,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: SwordRPCDelegate {
     func swordRPCDidConnect(_ rpc: SwordRPC) {
-//        print("connected")
+//        print("SwordRPC connected")
         startDate = Date()
         beginTimer()
     }
 
     func swordRPCDidDisconnect(_ rpc: SwordRPC, code: Int?, message msg: String?) {
 //        print("disconnected")
-        clearTimer()
+        statusUpdateTimer?.invalidate()
     }
 
     func swordRPCDidReceiveError(_ rpc: SwordRPC, code: Int, message msg: String) {
