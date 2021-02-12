@@ -23,8 +23,7 @@ RPFX is designed to be fairly modular, so you can tweak its code to use your own
 RPFX uses [my fork](https://github.com/PKBeam/SwordRPC) of [Azoy's SwordRPC](https://github.com/Azoy/SwordRPC).
 
 ## System Requirements
-- macOS Catalina (10.15) 
-  - if you're building this yourself, you can try changing the deployment target for an earlier macOS version and it might work
+- macOS (the latest release is built for macOS 11, but you may be able to run this on older versions)
 - Xcode installed (otherwise this wouldn't be very useful)
 
 ## Usage
