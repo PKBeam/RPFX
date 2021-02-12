@@ -8,6 +8,12 @@
 
 import Foundation
 
+func debugPrint(_ msg: String) {
+    if debug {
+        print(msg)
+    }
+}
+
 func getFileExt(_ file: String) -> String? {
     if let ext = file.split(separator: ".").last {
         return String(ext)

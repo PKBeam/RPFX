@@ -22,10 +22,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var startDate: Date?
 
     func beginTimer() {
-        statusUpdateTimer = Timer.scheduledTimer(withTimeInterval: TimeInterval(refreshInterval), repeats: true, block: { _ in
+        statusUpdateTimer = Timer.init(timeInterval: refreshInterval, repeats: true, block: { _ in
+            debugPrint("presence updating")
             self.updateStatus()
-//            print("presence updating")
         })
+        RunLoop.main.add(statusUpdateTimer!, forMode: .common)
         statusUpdateTimer!.fire()
     }
 
@@ -62,26 +63,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         p.timestamps.start = startDate!
         p.timestamps.end = nil
         rpc!.setPresence(p)
-//        print("updating RP")
+        debugPrint("updating RP")
     }
 
     func initRPC() {
+        debugPrint("init RPC")
         // init discord stuff
         rpc = SwordRPC.init(appId: discordClientId)
         rpc!.delegate = self
         // the API doesnt seem to like it if we try to connect too often?
-        discordConnectTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { timer in
+        discordConnectTimer = Timer.scheduledTimer(withTimeInterval: discordRPCconnectInterval, repeats: true, block: { timer in
+            debugPrint("trying RPC connect...")
             if self.rpc!.connect() {
-//                print("connected")
+                debugPrint("RPC connected")
                 timer.invalidate()
+            } else {
+                debugPrint("RPC connect failed")
             }
         })
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5, execute: {
+        DispatchQueue.main.asyncAfter(deadline: .now() + discordRPCconnectInterval, execute: {
             self.discordConnectTimer!.fire()
         })
     }
 
     func deinitRPC() {
+        debugPrint("deinit RPC")
         self.rpc!.setPresence(RichPresence())
 //        self.rpc!.disconnect()
         discordConnectTimer?.invalidate()
@@ -89,42 +95,45 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-//        print("app launched")
-        let openApps = NSWorkspace.shared.runningApplications
-        var xcodeOpen = openApps.filter({$0.bundleIdentifier == xcodeBundleId}).count > 0
-        var discordOpen = openApps.filter({$0.bundleIdentifier == discordBundleId}).count > 0
+        // keep track of whether discord or xcode are running
+        var xcodeOpen = NSWorkspace.shared.runningApplications.filter({$0.bundleIdentifier == xcodeBundleId}).count > 0
+        var discordOpen = NSWorkspace.shared.runningApplications.filter({$0.bundleIdentifier == discordBundleId}).count > 0
 
+        // one time check on startup
         if xcodeOpen && discordOpen {
             initRPC()
         }
 
-        let notifCenter = NSWorkspace.shared.notificationCenter
-
-        // run on Discord/Xcode launch
-        notifCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
+        // run on application launch
+        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 let appName = app.bundleIdentifier
                 if appName == xcodeBundleId {
+                    debugPrint("xcode open")
                     xcodeOpen = true
                 }
                 if appName == discordBundleId {
+                    debugPrint("discord open")
                     discordOpen = true
                 }
+
                 if xcodeOpen && discordOpen {
                     self.initRPC()
                 }
             }
         })
 
-        // run on Discord/Xcode close
-        notifCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
+        // run on application close
+        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
             if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
                 let appName = app.bundleIdentifier
                 if appName == xcodeBundleId {
+                    debugPrint("xcode closed")
                     xcodeOpen = false
                     self.deinitRPC()
                 }
                 if appName == discordBundleId {
+                    debugPrint("discord closed")
                     discordOpen = false
                     self.deinitRPC()
                 }
@@ -136,7 +145,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
-//        print("app closing")
+        debugPrint("RPFX shutting down...")
         deinitRPC()
         statusUpdateTimer?.invalidate()
         discordConnectTimer?.invalidate()
@@ -147,23 +156,17 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension AppDelegate: SwordRPCDelegate {
     func swordRPCDidConnect(_ rpc: SwordRPC) {
-//        print("SwordRPC connected")
+        debugPrint("SwordRPC connected")
         startDate = Date()
         beginTimer()
     }
 
     func swordRPCDidDisconnect(_ rpc: SwordRPC, code: Int?, message msg: String?) {
-//        print("disconnected")
+        debugPrint("disconnected")
         statusUpdateTimer?.invalidate()
     }
 
     func swordRPCDidReceiveError(_ rpc: SwordRPC, code: Int, message msg: String) {
     
-    }
-}
-
-struct AppDelegate_Previews: PreviewProvider {
-    static var previews: some View {
-        /*@START_MENU_TOKEN@*/Text("Hello, World!")/*@END_MENU_TOKEN@*/
     }
 }

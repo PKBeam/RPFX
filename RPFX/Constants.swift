@@ -8,13 +8,16 @@
 
 import Foundation
 
+let debug = false
 
 // used to register for notifs when Xcode opens/closes
 let xcodeBundleId = "com.apple.dt.Xcode"
 let discordBundleId = "com.hnc.Discord"
 
 // how often we check Xcode for a status update
-let refreshInterval = 5 // seconds
+let refreshInterval = 5.0 // seconds
+// how long to wait between attempts to connect to discord RPC
+let discordRPCconnectInterval = 5.0 // seconds
 
 // some other window names of Xcode
 // Can we tell if the user is browsing Developer Docs?
