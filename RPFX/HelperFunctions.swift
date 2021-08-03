@@ -10,7 +10,7 @@ import Foundation
 
 func debugPrint(_ msg: String) {
     if debug {
-        print(msg)
+        print("[RPFX] " + msg)
     }
 }
 

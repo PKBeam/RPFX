@@ -8,165 +8,144 @@
 
 import Cocoa
 import SwiftUI
-
 import SwordRPC
-
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
 
-//    var window: NSWindow!
-    var statusUpdateTimer: Timer?
-    var discordConnectTimer: Timer?
+    var statusUpdateTimer: Timer!
+    var discordConnectTimer: Timer!
     var rpc: SwordRPC?
-    var startDate: Date?
-
-    func beginTimer() {
-        statusUpdateTimer = Timer.init(timeInterval: refreshInterval, repeats: true, block: { _ in
-            debugPrint("presence updating")
-            self.updateStatus()
-        })
-        RunLoop.main.add(statusUpdateTimer!, forMode: .common)
-        statusUpdateTimer!.fire()
-    }
+    var connectionStartDate: Date!    // the time the connection to Discord RPC was initialised
 
     func updateStatus() {
-        var p = RichPresence()
+        debugPrint("updating Rich Presence status")
 
+        var rp = RichPresence()
         let fn = getActiveFilename()
         let ws = getActiveWorkspace()
 
         // determine file type
-        if fn != nil {
-            p.details = "Editing \(fn!)"
+        if let fileName = fn {
+            rp.details = "Editing \(fileName)"
 
-            if let fileExt = getFileExt(fn!), discordRPImageKeys.contains(fileExt) {
-                p.assets.largeImage = fileExt
+            // do we recognise this file type?
+            if let fileExt = getFileExt(fileName), discordRPImageKeys.contains(fileExt) {
+                rp.assets.largeImage = fileExt
             } else {
-                p.assets.largeImage = discordRPImageKeyDefault
+                rp.assets.largeImage = discordRPImageKeyDefault
             }
         }
 
         // determine workspace type
-        if ws != nil {
-            if ws != "Untitled" {
-                p.state = "in \(withoutFileExt(ws!))"
-            }
+        if let workspace = ws, workspace != xcodeUntitledWorkspace {
+            rp.state = "in \(withoutFileExt(workspace))"
         }
 
         // Xcode was just launched?
         if fn == nil && ws == nil {
-            p.assets.largeImage = discordRPImageKeyXcode
-            p.details = "No file open"
+            rp.assets.largeImage = discordRPImageKeyXcode
+            rp.details = "No file open"
         }
 
-        p.timestamps.start = startDate!
-        p.timestamps.end = nil
-        rpc!.setPresence(p)
-        debugPrint("updating RP")
+        // set timestamps
+        rp.timestamps.start = connectionStartDate
+        rp.timestamps.end = nil
+
+        // finally, set rich presence
+        rpc!.setPresence(rp)
     }
 
     func initRPC() {
-        debugPrint("init RPC")
+        debugPrint("initialising RPC...")
         // init discord stuff
         rpc = SwordRPC.init(appId: discordClientId)
         rpc!.delegate = self
-        // the API doesnt seem to like it if we try to connect too often?
-        discordConnectTimer = Timer.scheduledTimer(withTimeInterval: discordRPCconnectInterval, repeats: true, block: { timer in
-            debugPrint("trying RPC connect...")
-            if self.rpc!.connect() {
-                debugPrint("RPC connected")
-                timer.invalidate()
-            } else {
-                debugPrint("RPC connect failed")
+
+        discordConnectTimer = Timer.scheduledTimer(
+            withTimeInterval: discordConnectInterval, // the API doesn't seem to like it if we try to connect too often
+            repeats: true,
+            block: { timer in
+                debugPrint("-- trying to connect to Discord...")
+                if self.rpc!.connect() {
+                    timer.invalidate()
+                }
             }
-        })
-        DispatchQueue.main.asyncAfter(deadline: .now() + discordRPCconnectInterval, execute: {
-            self.discordConnectTimer!.fire()
-        })
+        )
+        discordConnectTimer.fire()
     }
 
     func deinitRPC() {
-        debugPrint("deinit RPC")
-        self.rpc!.setPresence(RichPresence())
-//        self.rpc!.disconnect()
-        discordConnectTimer?.invalidate()
+        debugPrint("deinitialising RPC")
+        discordConnectTimer.invalidate()
+        statusUpdateTimer.invalidate()
+        rpc!.disconnect()
         self.rpc = nil
     }
 
-    func applicationDidFinishLaunching(_ aNotification: Notification) {
-        // keep track of whether discord or xcode are running
-        var xcodeOpen = NSWorkspace.shared.runningApplications.filter({$0.bundleIdentifier == xcodeBundleId}).count > 0
-        var discordOpen = NSWorkspace.shared.runningApplications.filter({$0.bundleIdentifier == discordBundleId}).count > 0
+    func scanRunningApplications() {
+        let runningApps = NSWorkspace.shared.runningApplications
+        let xcodeOpen = runningApps.contains(where: {$0.bundleIdentifier == xcodeBundleId})
+        let discordOpen = runningApps.contains(where: {$0.bundleIdentifier == discordBundleId})
 
-        // one time check on startup
         if xcodeOpen && discordOpen {
             initRPC()
+        } else if rpc != nil {
+            deinitRPC()
+        }
+    }
+
+    func applicationDidFinishLaunching(_ aNotification: Notification) {
+        debugPrint("RPFX launched")
+        scanRunningApplications()
+
+        // closure that updates RPC connection status if Xcode/Discord were involved in the notification
+        let onNotif: (Notification) -> Void = { notification in
+            if let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
+                if [xcodeBundleId, discordBundleId].contains(app.bundleIdentifier) {
+                    self.scanRunningApplications()
+                }
+            }
         }
 
-        // run on application launch
-        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: { notif in
-            if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
-                let appName = app.bundleIdentifier
-                if appName == xcodeBundleId {
-                    debugPrint("xcode open")
-                    xcodeOpen = true
-                }
-                if appName == discordBundleId {
-                    debugPrint("discord open")
-                    discordOpen = true
-                }
-
-                if xcodeOpen && discordOpen {
-                    self.initRPC()
-                }
-            }
-        })
-
-        // run on application close
-        NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: { notif in
-            if let app = notif.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication {
-                let appName = app.bundleIdentifier
-                if appName == xcodeBundleId {
-                    debugPrint("xcode closed")
-                    xcodeOpen = false
-                    self.deinitRPC()
-                }
-                if appName == discordBundleId {
-                    debugPrint("discord closed")
-                    discordOpen = false
-                    self.deinitRPC()
-                }
-            }
-        })
-
-
+        let notifCenter = NSWorkspace.shared.notificationCenter
+        notifCenter.addObserver(forName: NSWorkspace.didLaunchApplicationNotification, object: nil, queue: nil, using: onNotif)
+        notifCenter.addObserver(forName: NSWorkspace.didTerminateApplicationNotification, object: nil, queue: nil, using: onNotif)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
         debugPrint("RPFX shutting down...")
-        deinitRPC()
-        statusUpdateTimer?.invalidate()
-        discordConnectTimer?.invalidate()
+        if rpc != nil {
+            deinitRPC()
+        }
     }
-
-
 }
 
 extension AppDelegate: SwordRPCDelegate {
     func swordRPCDidConnect(_ rpc: SwordRPC) {
         debugPrint("SwordRPC connected")
-        startDate = Date()
-        beginTimer()
+
+        // record the time the connection was initiated
+        connectionStartDate = Date()
+
+        // create status update timer
+        statusUpdateTimer = Timer.init(
+            timeInterval: statusRefreshInterval,
+            repeats: true,
+            block: { _ in
+                self.updateStatus()
+            }
+        )
+        // for some reason, a scheduledTimer here won't refire
+        // (workaround: manually add it to the common RunLoop)
+        RunLoop.main.add(statusUpdateTimer, forMode: .common)
+        statusUpdateTimer.fire()
     }
 
     func swordRPCDidDisconnect(_ rpc: SwordRPC, code: Int?, message msg: String?) {
-        debugPrint("disconnected")
-        statusUpdateTimer?.invalidate()
-    }
-
-    func swordRPCDidReceiveError(_ rpc: SwordRPC, code: Int, message msg: String) {
-    
+        debugPrint("SwordRPC disconnected")
+        // stop status update timer
+        statusUpdateTimer.invalidate()
     }
 }

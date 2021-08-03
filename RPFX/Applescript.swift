@@ -59,13 +59,10 @@ func getActiveFilename() -> String? {
     }
 
     // find the first window title that matches a filename
-    // (the first window name is the one in focus)
-    for window in windowNames {
-        // make sure the focused window refers to a file
-        for file in fileNames {
-            if file == window {
-                return file
-            }
+    for window in windowNames { // iterate in order: the first window name is the one in focus
+        // check the focused window refers to a file
+        if fileNames.contains(window) {
+            return window
         }
     }
 
