@@ -8,20 +8,22 @@
 
 import Foundation
 
-let debug = false
+let debug = true
 
-// used to register for notifs when Xcode opens/closes
 let xcodeBundleId = "com.apple.dt.Xcode"
 let discordBundleId = "com.hnc.Discord"
 
 // how often we check Xcode for a status update
-let refreshInterval = 5.0 // seconds
+let statusRefreshInterval = 5.0 // seconds
+
 // how long to wait between attempts to connect to discord RPC
-let discordRPCconnectInterval = 5.0 // seconds
+let discordConnectInterval = 5.0 // seconds
+
+// name of an anonymous workspace in Xcode
+let xcodeUntitledWorkspace = "Untitled"
 
 // some other window names of Xcode
 // Can we tell if the user is browsing Developer Docs?
-
 //let xcodeWindowNames = [
 //    "Devices", // Devices and Simulators
 //    "Organiser", // Organiser
@@ -31,12 +33,14 @@ let discordRPCconnectInterval = 5.0 // seconds
 //    // prefix "Add Package to "
 //]
 
-// The following constants are for use with the Discord App
-// if you're using your own Discord App, update this as needed
+/*
+    The following constants are for use with the Discord App.
+    If you're using your own Discord App, update this as needed.
+*/
 
 let discordClientId = "700358131481444403"
 
-// discord image keys of supported file types
+// image keys of supported file types
 let discordRPImageKeys = [
     "swift",
     "playground",
@@ -48,9 +52,9 @@ let discordRPImageKeys = [
     "c",
 ]
 
-// fallback for unsupported file types
+// fallback image for unsupported file types
 let discordRPImageKeyDefault = "file"
 
-// Xcode application icon
+// image for Xcode icon
 let discordRPImageKeyXcode = "xcode"
 

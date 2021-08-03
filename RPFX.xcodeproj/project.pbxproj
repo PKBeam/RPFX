@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		5028EA45244B181D003A1830 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5028EA44244B181D003A1830 /* HelperFunctions.swift */; };
+		506555DE26B90E0100A4416F /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 506555DD26B90E0100A4416F /* SwordRPC */; };
 		5068E2DF244AA3C90012CCF7 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5068E2DE244AA3C90012CCF7 /* Constants.swift */; };
-		5068E2E2244AD9170012CCF7 /* SwordRPC in Frameworks */ = {isa = PBXBuildFile; productRef = 5068E2E1244AD9170012CCF7 /* SwordRPC */; };
 		50C66C1B244B3A5800A4BECD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 50C66C1A244B3A5800A4BECD /* Main.storyboard */; };
 		50C6CBB3244974A400F10C5D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C6CBB2244974A400F10C5D /* AppDelegate.swift */; };
 		50C6CBB7244974A700F10C5D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 50C6CBB6244974A700F10C5D /* Assets.xcassets */; };
@@ -19,6 +19,7 @@
 
 /* Begin PBXFileReference section */
 		5028EA44244B181D003A1830 /* HelperFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
+		506555DF26B9210700A4416F /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		5068E2DE244AA3C90012CCF7 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5068E2E3244ADAFE0012CCF7 /* SwordRPC */ = {isa = PBXFileReference; lastKnownFileType = folder; name = SwordRPC; path = "../SwordRPC-fork/SwordRPC"; sourceTree = "<group>"; };
 		50C66C1A244B3A5800A4BECD /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -36,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5068E2E2244AD9170012CCF7 /* SwordRPC in Frameworks */,
+				506555DE26B90E0100A4416F /* SwordRPC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -63,6 +64,7 @@
 		50C6CBB1244974A400F10C5D /* RPFX */ = {
 			isa = PBXGroup;
 			children = (
+				506555DF26B9210700A4416F /* README.md */,
 				50C6CBB2244974A400F10C5D /* AppDelegate.swift */,
 				5028EA44244B181D003A1830 /* HelperFunctions.swift */,
 				5068E2DE244AA3C90012CCF7 /* Constants.swift */,
@@ -101,7 +103,7 @@
 			);
 			name = RPFX;
 			packageProductDependencies = (
-				5068E2E1244AD9170012CCF7 /* SwordRPC */,
+				506555DD26B90E0100A4416F /* SwordRPC */,
 			);
 			productName = RPFX;
 			productReference = 50C6CBAF244974A400F10C5D /* RPFX.app */;
@@ -114,7 +116,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1110;
-				LastUpgradeCheck = 1200;
+				LastUpgradeCheck = 1250;
 				ORGANIZATIONNAME = "Vincent Liu";
 				TargetAttributes = {
 					50C6CBAE244974A400F10C5D = {
@@ -133,7 +135,7 @@
 			);
 			mainGroup = 50C6CBA6244974A400F10C5D;
 			packageReferences = (
-				5068E2E0244AD9170012CCF7 /* XCRemoteSwiftPackageReference "SwordRPC" */,
+				506555DC26B90E0100A4416F /* XCRemoteSwiftPackageReference "SwordRPC" */,
 			);
 			productRefGroup = 50C6CBB0244974A400F10C5D /* Products */;
 			projectDirPath = "";
@@ -212,7 +214,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = s;
+				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -223,13 +225,13 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -278,12 +280,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -304,10 +306,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.PKBeam.RPFX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -328,10 +329,9 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 11.1;
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.PKBeam.RPFX;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -359,20 +359,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		5068E2E0244AD9170012CCF7 /* XCRemoteSwiftPackageReference "SwordRPC" */ = {
+		506555DC26B90E0100A4416F /* XCRemoteSwiftPackageReference "SwordRPC" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/PKBeam/SwordRPC";
+			repositoryURL = "https://github.com/PKBeam/SwordRPC.git";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.2.2;
+				branch = master;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5068E2E1244AD9170012CCF7 /* SwordRPC */ = {
+		506555DD26B90E0100A4416F /* SwordRPC */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 5068E2E0244AD9170012CCF7 /* XCRemoteSwiftPackageReference "SwordRPC" */;
+			package = 506555DC26B90E0100A4416F /* XCRemoteSwiftPackageReference "SwordRPC" */;
 			productName = SwordRPC;
 		};
 /* End XCSwiftPackageProductDependency section */
